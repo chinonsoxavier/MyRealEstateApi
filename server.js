@@ -4,9 +4,7 @@ const chalk = require("chalk");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/authRoute");
 const bodyParser = require("body-parser");
-const productRoutes = require("./routes/productRoute");
 const userRoutes = require("./routes/userRoutes");
-const ordersRoutes = require("./routes/ordersRoute");
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
@@ -27,8 +25,6 @@ mongoose
 app.use("/uploads", express.static("uploads"));
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
-app.use(baseRoute + "order", ordersRoutes);
-app.use(baseRoute + "product", productRoutes);
 
 // io.on("connection", () => {
 //     console.log("A user connected")

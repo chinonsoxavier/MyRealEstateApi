@@ -13,7 +13,6 @@ const {
 } = require("../services/jwt/jwtServices");
 const chalk = require("chalk");
 
-
 // Register
 exports.createUser = async (req, res) => {
   try {
@@ -59,7 +58,6 @@ exports.createUser = async (req, res) => {
   }
 };
 
-
 // verify user email
 exports.verifyUser = async (req, res) => {
   const user = req.user;
@@ -72,7 +70,6 @@ exports.verifyUser = async (req, res) => {
   }
 };
 
-
 // refresh verification token
 exports.RefreshVerificationToken = async (req, res) => {
   const token = req.params.token;
@@ -80,17 +77,17 @@ exports.RefreshVerificationToken = async (req, res) => {
   try {
     const newVerificationToken = await GenerateToken(user, "access");
     const activationUrl = `http://localhost:8080/auth/verify/${newVerificationToken}`;
-   const data = { email: user.email, activationUrl: activationUrl };
-   const htmlContent = await ejs.renderFile(
-     path.join("services", "emails", "verifyEmail.ejs"),
-     data
-   );
-   await sendMail({
-     from: `Evara ${process.env.SMPT_USER}`,
-     to: req.body.email,
-     subject: "Activate your Evara account",
-     html: htmlContent,
-   });
+    const data = { email: user.email, activationUrl: activationUrl };
+    const htmlContent = await ejs.renderFile(
+      path.join("services", "emails", "verifyEmail.ejs"),
+      data
+    );
+    await sendMail({
+      from: `Evara ${process.env.SMPT_USER}`,
+      to: req.body.email,
+      subject: "Activate your Evara account",
+      html: htmlContent,
+    });
     res
       .status(200)
       .json("A new verification token has been sent to your email!");
@@ -100,17 +97,18 @@ exports.RefreshVerificationToken = async (req, res) => {
   }
 };
 
-
 // login user
 exports.LoginUser = async (req, res) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
   const existingUser = await userServices.getUserByEmail(userEmail);
-  const bytes = CryptoJS.AES.decrypt(
-    existingUser.password,
-    process.env.CRYPTO_JS_SECRET_KEY
-  );
-  const originalPassword = bytes.toString(CryptoJS.enc.Utf8);
+  const bytes = existingUser
+    ? CryptoJS.AES?.decrypt(
+        existingUser?.password,
+        process.env.CRYPTO_JS_SECRET_KEY
+      )
+    : null;
+  const originalPassword = bytes?.toString(CryptoJS.enc.Utf8);
   try {
     if (existingUser == null || existingUser.$isEmpty()) {
       return res.status(404).json("User not found");
@@ -130,7 +128,6 @@ exports.LoginUser = async (req, res) => {
     res.status(400).json({ Error: error });
   }
 };
-
 
 // refresh access token
 exports.RefreshToken = async (req, res) => {
@@ -156,11 +153,10 @@ exports.RefreshToken = async (req, res) => {
   }
 };
 
-
 // reset-password
 exports.ResetPasswordToken = async (req, res) => {
-   const token = req.params.token;
-   const user = decodedToken(token);
+  const token = req.params.token;
+  const user = decodedToken(token);
   try {
     const resetPasswordToken = await GenerateToken(user, "access");
     const activationUrl = `http://localhost:8080/auth/reset-password/${resetPasswordToken}`;
@@ -175,11 +171,9 @@ exports.ResetPasswordToken = async (req, res) => {
       subject: "Reset your Evara password",
       html: htmlContent,
     });
-    res
-      .status(200)
-      .json("A reset token has been sent to your email!");
+    res.status(200).json("A reset token has been sent to your email!");
   } catch (error) {
     console.log(chalk.red(err));
     res.status(400).json(error);
   }
-}
+};

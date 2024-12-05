@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const authRoutes = require("./routes/authRoute");
 const bodyParser = require("body-parser");
 const userRoutes = require("./routes/userRoutes");
+const listingRoutes = require("./routes/listingRoute");
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
@@ -13,8 +14,7 @@ const http = require("http").Server(app);
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const uri = process.env.MONGODB_URI;
 
-
-  // "mongodb+srv://chinonsoxavier26:edcpUT6Hr9XI007L@cluster0.n3vwy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+// "mongodb+srv://chinonsoxavier26:edcpUT6Hr9XI007L@cluster0.n3vwy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 // const client = new MongoClient(uri, {
@@ -49,7 +49,8 @@ app.use(express.json());
 dotenv.config();
 mongoose
   .connect(
-    "mongodb+srv://chinonsoxavier26:edcpUT6Hr9XI007L@cluster0.n3vwy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    process.env.MONGODB_URI,
+    // "mongodb+srv://chinonsoxavier26:edcpUT6Hr9XI007L@cluster0.n3vwy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
     {}
   )
   .then(() => console.log(chalk.green("Db connection Successfully")))
@@ -58,6 +59,7 @@ mongoose
 app.use("/uploads", express.static("uploads"));
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/listing", listingRoutes);
 
 // io.on("connection", () => {
 //     console.log("A user connected")
